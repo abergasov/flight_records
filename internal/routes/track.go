@@ -2,6 +2,7 @@ package routes
 
 import (
 	"flight_records/internal/entities"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,8 +23,8 @@ func bindFlightPairs(ctx *fiber.Ctx) ([]entities.FlightPair, error) {
 	pairs := make([]entities.FlightPair, 0, len(routes))
 	for i := range routes {
 		pairs = append(pairs, entities.FlightPair{
-			Source:      routes[i][0],
-			Destination: routes[i][1],
+			Source:      strings.ToLower(routes[i][0]),
+			Destination: strings.ToLower(routes[i][1]),
 		})
 	}
 	return pairs, nil
