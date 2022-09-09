@@ -23,7 +23,7 @@ func main() {
 		return
 	}
 	trackerService := tracker.InitRouteTracker()
-	app := routes.InitAppRouter(*appPort, trackerService)
+	app := routes.InitAppRouter(*appPort, log, trackerService)
 	go func() {
 		log.Info("starting service", zap.String("port", *appPort))
 		if err = app.Run(); err != nil {

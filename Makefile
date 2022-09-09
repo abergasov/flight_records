@@ -8,4 +8,11 @@ lint: ## Check code style
 
 run: ## Run app. default port is `8080`. You can change it with `make port=8081 run`
 	@echo "Running on port ${APP_PORT}"
+	go mod vendor
 	go run ./cmd/flight_records.go -port=${APP_PORT}
+
+test: ## Run tests
+	go test -race ./...
+
+benc: ## Run benchmarks
+	go test -bench=. ./...

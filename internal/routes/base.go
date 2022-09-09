@@ -1,10 +1,14 @@
 package routes
 
 import (
+	"errors"
+	appLog "flight_records/internal/logger"
 	"flight_records/internal/service/tracker"
+	"net/http"
+
+	"go.uber.org/zap"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
@@ -15,27 +19,23 @@ type AppRouter struct {
 }
 
 // InitAppRouter initializes the app router.
-func InitAppRouter(appPort string, appService tracker.Tracker) *AppRouter {
+func InitAppRouter(appPort string, logger appLog.AppLogger, appService tracker.Tracker) *AppRouter {
+	log := logger.With(zap.String("module", "routes"))
 	fiberApp := fiber.New(
 		fiber.Config{
-			//ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			//	log.Error("error get info. path: `%s`, err: %s", ctx.Request().URI().PathOriginal(), err)
-			//	if errors.Is(err, service.ErrNotFound) {
-			//		return ctx.Status(http.StatusNotFound).JSON(fiber.Map{"error": "not found"})
-			//	} else if errors.Is(err, fiber.ErrBadRequest) {
-			//		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "bad request"})
-			//	}
-			//	return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
-			//},
-			//DisableStartupMessage: true,
-			//ReadBufferSize:        4096 * 16,
-			//WriteBufferSize:       4096 * 16,
-			//BodyLimit:             100 * 1024 * 1024,
+			ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+				log.Error("error occurred", err, zap.String("path", ctx.Path()))
+				if errors.Is(err, fiber.ErrBadRequest) {
+					return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": "bad request"})
+				}
+				return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "internal server error"})
+			},
+
+			DisableStartupMessage: true,
 		},
 	)
 
 	fiberApp.Use(recover.New())
-	fiberApp.Use(logger.New())
 
 	app := &AppRouter{
 		appPort:    appPort,
