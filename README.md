@@ -75,6 +75,27 @@ For example, 90% of users fly using 3-4 point.
 So we can generate code for these cases - make all possible pairs using combinatorics and build route. 
 For 3-4 points it will be 6-24 combinations.
 
+So final realization will be like:
+```go
+func (r *RouteTracker) Track(route []entities.FlightPair) entities.FlightPair {
+	// cover X% of cases (let it be 90%)
+	switch len(route) {
+	case 0:
+		return entities.FlightPair{}
+	case 1:
+		return route[0]
+	case 2, 3, 4:
+		return r.CodogeneratedMethod(route)
+	}
+    // cover rest cases
+	if res := r.CalculateRouteOverMaps(route); res != nil {
+		return *res
+	}
+    // cavalry's here, when all other methods are failed
+	return r.CalculateRouteWithDuplicates(route)
+}
+```
+
 #### 2. Dual solutions
 Some cases can generate more than 1 correct answer. For example:
 ```
