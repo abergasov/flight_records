@@ -43,14 +43,14 @@ make bench
 # my laptop results
 cpu: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
 # realization without duplicates
-BenchmarkRouteTracker_CalculateRouteOverMaps-8                   3617112               322.8 ns/op
+BenchmarkRouteTracker_CalculateRouteOverMaps-8                   3617112          322.8 ns/op
 # realization with duplicates
-BenchmarkRouteTracker_CalculateRouteWithDuplicates-8              596617               1970 ns/op
+BenchmarkRouteTracker_CalculateRouteWithDuplicates-8              596617          1970 ns/op
 # realization without duplicates for route with 2 points
-BenchmarkRouteTracker_CalculateRouteOverMaps_2Values-8           5407621               218.1 ns/op
+BenchmarkRouteTracker_CalculateRouteOverMaps_2Values-8           5407621          218.1 ns/op
 # direct realization `if - else if - else` for 2 and 3 points routes
-BenchmarkRouteTracker_CalculateRouterFor2Pairs-8                70915405               16.02 ns/op
-BenchmarkRouteTracker_CalculateRouterFor3Pairs-8                65531049               16.79 ns/op
+BenchmarkRouteTracker_CalculateRouterFor2Pairs-8                70915405          16.02 ns/op
+BenchmarkRouteTracker_CalculateRouterFor3Pairs-8                65531049          16.79 ns/op
 ```
 If we write code for real usage in production, i would like to suggest to do some research and try to get answers for several questions:
 1. how often does user visit same airport more than 1 time in his route.
@@ -66,11 +66,13 @@ for most cases - it will work quite fast. But for several cases - not so good.
 #### Possible improvements
 Try to guess if duplicates exist before parse route. 
 ##### Codogeneration
-I make some methods, which use very naive approach - `if - else if - else` for 2 and 3 points. Benchmark for these methods shows best results.
+I make some methods, which use very naive approach - `if - else if - else` for 2 and 3 points. 
+Benchmark for these methods shows best results.
 
 If it is possible to collect statistic - how long is average route for user, then other improvements are possible.
 
-For example, 90% of users fly using 3-4 point. So we can generate code for these cases - make all possible pairs using combinatorics and build route. 
+For example, 90% of users fly using 3-4 point. 
+So we can generate code for these cases - make all possible pairs using combinatorics and build route. 
 For 3-4 points it will be 6-24 combinations.
 
 #### 2. Dual solutions
