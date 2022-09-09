@@ -87,11 +87,11 @@ func (r *RouteTracker) Track(route []entities.FlightPair) entities.FlightPair {
 	case 2, 3, 4:
 		return r.CodogeneratedMethod(route)
 	}
-    // cover rest cases
+	// cover rest cases
 	if res := r.CalculateRouteOverMaps(route); res != nil {
 		return *res
 	}
-    // cavalry's here, when all other methods are failed
+	// cavalry's here, when all other methods are failed
 	return r.CalculateRouteWithDuplicates(route)
 }
 ```
