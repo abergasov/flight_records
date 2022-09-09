@@ -30,8 +30,8 @@ func (r *RouteTracker) Track(route []entities.FlightPair) entities.FlightPair {
 
 // CalculateRouteOverMaps calculates the route using 2 maps.
 // Assuming that user NOT return to airport that he already visited.
-// In that key we loop over routes, and save soruce and destination airports to maps.
-// If in any map this airport exist - this is transit, remove it from map.
+// In that key we loop over routes, and save source and destination airports to maps.
+// If in any map this airport exist - this is transit, remove it from map (destination|source can be only in one map).
 // At the end we have 2 maps with source and destination airports.
 func (r *RouteTracker) CalculateRouteOverMaps(route []entities.FlightPair) *entities.FlightPair {
 	airportSource := make(map[string]struct{}, len(route))
@@ -61,12 +61,12 @@ func (r *RouteTracker) CalculateRouterFor2Pairs(route []entities.FlightPair) (re
 	return entities.FlightPair{strings.ToUpper(route[1].Source), strings.ToUpper(route[0].Destination)}
 }
 
-// CalculateRouterFor3Pairs works only if order not shuffled
+// CalculateRouterFor3Pairs works only if order not shuffled. Method for hypothesis check in benchmark.
 func (r *RouteTracker) CalculateRouterFor3Pairs(route []entities.FlightPair) (result entities.FlightPair) {
 	if route[0].Destination == route[1].Source && route[1].Destination == route[2].Source {
 		return entities.FlightPair{strings.ToUpper(route[0].Source), strings.ToUpper(route[2].Destination)}
 	}
-	return entities.FlightPair{strings.ToUpper(route[1].Source), strings.ToUpper(route[0].Destination)}
+	panic("not implemented")
 }
 
 type routeContainer struct {
@@ -74,8 +74,7 @@ type routeContainer struct {
 	sourceMap map[string][]string
 }
 
-// CalculateRouteWithDuplicates calculates the route using 2 maps.
-// Assuming that user CAN return to airport that he already visited.
+// CalculateRouteWithDuplicates calculates the route with assuming that user CAN return to airport that he already visited.
 func (r *RouteTracker) CalculateRouteWithDuplicates(route []entities.FlightPair) entities.FlightPair {
 	perAirportSource := make(map[string][]string, len(route))
 	for _, pair := range route {
